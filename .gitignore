@@ -114,3 +114,6 @@ storage/pdfs/*
 
 # Node (если будет фронт-часть рядом)
 node_modules/
+
+# Claude Code
+.claude/

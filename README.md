@@ -1,41 +1,77 @@
 # magazines-backend
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
+Backend for the Magazines Catalog application. Built with Ktor on Kotlin 1.9 / JVM 17.
 
-Here are some useful links to get you started:
+## Stack
 
-* [Ktor Documentation](https://ktor.io/docs/home.html)
-* [Ktor GitHub page](https://github.com/ktorio/ktor)
-* [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). [Request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up).
+- Ktor 2.3 (Netty engine, content negotiation, kotlinx-serialization, auth + JWT, status pages, call logging, CORS)
+- Exposed 0.45 (core / dao / jdbc / java-time) on PostgreSQL
+- HikariCP connection pool
+- Flyway for schema migrations
+- Koin for DI
+- Firebase Admin SDK for token verification
+- Logback for logging
 
-## Features
-
-Here's a list of features included in this project:
-
-| Name | Description |
-|------|-------------|
-| [Content Negotiation](https://start.ktor.io/p/io.ktor/server-content-negotiation) | Provides automatic content conversion according to Content-Type and Accept headers |
-| [kotlinx.serialization](https://start.ktor.io/p/io.ktor/server-kotlinx-serialization) | Handles JSON serialization using kotlinx.serialization library |
-| [Authentication](https://start.ktor.io/p/io.ktor/server-auth) | Provides extension point for handling the Authorization header |
-| [Firebase authentication](https://start.ktor.io/p/com.kborowy/server-firebase-auth-provider) | Authentication provider for Firebase Auth module |
-| [Authentication JWT](https://start.ktor.io/p/io.ktor/server-auth-jwt) | Handles JSON Web Token (JWT) bearer authentication scheme |
-| [Status Pages](https://start.ktor.io/p/io.ktor/server-status-pages) | Provides exception handling for routes |
-| [CORS](https://start.ktor.io/p/io.ktor/server-cors) | Enables Cross-Origin Resource Sharing (CORS) |
-| [Call Logging](https://start.ktor.io/p/io.ktor/server-call-logging) | Logs client requests |
-| [Static Content](https://start.ktor.io/p/io.ktor/server-static-content) | Serves static files from defined locations |
-| [Default Headers](https://start.ktor.io/p/io.ktor/server-default-headers) | Adds a default set of headers to HTTP responses |
-| [Compression](https://start.ktor.io/p/io.ktor/server-compression) | Compresses responses using encoding algorithms like GZIP |
-
-## Building & Running
-
-To build or run the project, use one of the following tasks:
-
-| Task | Description |
-|------|-------------|
-
-If the server starts successfully, you'll see the following output:
+## Project layout
 
 ```
-2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
-2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
+src/main/kotlin/com/magazines/
+├── Application.kt         # entry point (embeddedServer + Netty)
+├── config/                # application configuration
+├── plugins/               # Ktor feature installers
+├── db/tables/             # Exposed table definitions
+├── domain/
+│   ├── model/             # domain entities
+│   └── exception/         # domain exceptions
+├── data/
+│   ├── dto/               # request/response DTOs
+│   └── repository/        # repository implementations
+├── service/               # business services
+├── routes/                # HTTP route handlers
+└── util/                  # shared helpers
 ```
+
+## Configuration
+
+Settings live in `src/main/resources/application.conf` (HOCON) and read the
+following environment variables (with sensible local fallbacks):
+
+| Variable                    | Default                                                  |
+|-----------------------------|----------------------------------------------------------|
+| `SERVER_PORT`               | `8080`                                                   |
+| `DATABASE_URL`              | `jdbc:postgresql://localhost:5432/magazines_catalog`     |
+| `DATABASE_USER`             | `app`                                                    |
+| `DATABASE_PASSWORD`         | `app_password`                                           |
+| `STORAGE_PATH`              | `./storage`                                              |
+| `FIREBASE_CREDENTIALS_PATH` | `src/main/resources/firebase-service-account.json`       |
+
+A starter file is provided in `.env.example`.
+
+## Running locally
+
+1. Start the supporting services (PostgreSQL + pgAdmin):
+
+   ```sh
+   docker compose up -d
+   ```
+
+2. Build and run the server:
+
+   ```sh
+   ./gradlew run
+   ```
+
+3. Verify it's up:
+
+   ```sh
+   curl http://localhost:8080/
+   # → Magazines Catalog API v1.0
+   ```
+
+## Useful tasks
+
+| Task                | Description                  |
+|---------------------|------------------------------|
+| `./gradlew build`   | Compile + run tests          |
+| `./gradlew run`     | Run the server               |
+| `./gradlew test`    | Run tests only               |

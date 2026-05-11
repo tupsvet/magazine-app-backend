@@ -1,0 +1,4 @@
+ALTER TABLE users DROP COLUMN firebase_uid;
+ALTER TABLE users ADD COLUMN password_hash VARCHAR(255) NOT NULL DEFAULT '';
+ALTER TABLE users ALTER COLUMN password_hash DROP DEFAULT;
+ALTER TABLE users ADD CONSTRAINT users_email_key UNIQUE (email);

@@ -5,8 +5,8 @@ import java.util.UUID
 
 data class User(
     val id: UUID,
-    val firebaseUid: String,
     val email: String,
+    val passwordHash: String,
     val displayName: String?,
     val role: UserRole,
     val createdAt: LocalDateTime,

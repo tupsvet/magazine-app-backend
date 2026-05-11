@@ -64,8 +64,9 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
 
-    // Firebase Admin SDK
-    implementation("com.google.firebase:firebase-admin:9.2.0")
+    // Auth: bcrypt + JWT
+    implementation("org.mindrot:jbcrypt:0.4")
+    implementation("com.auth0:java-jwt:4.4.0")
 
     // Logback
     implementation("ch.qos.logback:logback-classic:$logbackVersion")

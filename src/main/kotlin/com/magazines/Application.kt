@@ -7,6 +7,7 @@ import com.magazines.plugins.configureRouting
 import com.magazines.plugins.configureSerialization
 import com.magazines.plugins.configureStatusPages
 import com.typesafe.config.ConfigFactory
+import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.config.HoconApplicationConfig
 import io.ktor.server.engine.embeddedServer
@@ -18,16 +19,21 @@ fun main() {
     val config = HoconApplicationConfig(ConfigFactory.load())
     val port = config.property("ktor.deployment.port").getString().toInt()
 
+    embeddedServer(Netty, port = port, module = Application::module)
+        .start(wait = true)
+}
+
+fun Application.module() {
+
     initDatabase()
 
-    embeddedServer(Netty, port = port) {
-        install(Koin) {
-            slf4jLogger()
-            modules(appModule)
-        }
-        configureSerialization()
-        configureAuthentication()
-        configureStatusPages()
-        configureRouting()
-    }.start(wait = true)
+    install(Koin) {
+        slf4jLogger()
+        modules(appModule)
+    }
+
+    configureSerialization()
+    configureAuthentication()
+    configureStatusPages()
+    configureRouting()
 }

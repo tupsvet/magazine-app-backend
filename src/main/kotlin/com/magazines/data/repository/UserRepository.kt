@@ -35,7 +35,7 @@ class UserRepository {
             it[UsersTable.email] = email
             it[UsersTable.passwordHash] = passwordHash
             it[UsersTable.displayName] = displayName
-            it[UsersTable.role] = role
+            it[UsersTable.role] = role.name
         } get UsersTable.id
 
         UsersTable
@@ -49,7 +49,7 @@ class UserRepository {
         email = this[UsersTable.email],
         passwordHash = this[UsersTable.passwordHash],
         displayName = this[UsersTable.displayName],
-        role = this[UsersTable.role],
+        role = UserRole.valueOf(this[UsersTable.role]),
         createdAt = this[UsersTable.createdAt],
     )
 }

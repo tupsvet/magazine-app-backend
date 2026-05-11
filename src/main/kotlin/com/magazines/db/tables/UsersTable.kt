@@ -9,6 +9,9 @@ object UsersTable : UUIDTable("users") {
     val email = varchar("email", 255).uniqueIndex()
     val passwordHash = varchar("password_hash", 255)
     val displayName = varchar("display_name", 100).nullable()
-    val role = enumerationByName("role", 20, UserRole::class)
+    val role = varchar("role", 20)
+        .check("valid_user_role") {
+            it inList listOf("USER", "ADMIN")
+        }
     val createdAt = datetime("created_at").defaultExpression(CurrentDateTime)
 }

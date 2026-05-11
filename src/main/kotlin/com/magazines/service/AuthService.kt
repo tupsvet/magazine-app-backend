@@ -4,9 +4,10 @@ import com.magazines.config.JwtConfig
 import com.magazines.data.dto.AuthResponse
 import com.magazines.data.dto.toDto
 import com.magazines.data.repository.UserRepository
-import com.magazines.domain.exception.EmailAlreadyTakenException
-import com.magazines.domain.exception.InvalidCredentialsException
-import com.magazines.domain.exception.UserNotFoundException
+import com.magazines.domain.exception.ConflictException
+import com.magazines.domain.exception.NotFoundException
+import com.magazines.domain.exception.UnauthorizedException
+
 import com.magazines.domain.model.User
 import java.util.UUID
 
@@ -19,7 +20,7 @@ class AuthService(
     suspend fun register(email: String, password: String, displayName: String?): AuthResponse {
         val normalized = email.trim().lowercase()
         if (userRepository.findByEmail(normalized) != null) {
-            throw EmailAlreadyTakenException(normalized)
+            throw ConflictException("Email already registered: $email")
         }
         val user = userRepository.create(
             email = normalized,
@@ -32,16 +33,16 @@ class AuthService(
     suspend fun login(email: String, password: String): AuthResponse {
         val normalized = email.trim().lowercase()
         val user = userRepository.findByEmail(normalized)
-            ?: throw InvalidCredentialsException()
+            ?: throw UnauthorizedException("Invalid credentials")
         if (!passwordHasher.verify(password, user.passwordHash)) {
-            throw InvalidCredentialsException()
+            throw UnauthorizedException("Invalid credentials")
         }
         return user.toAuthResponse()
     }
 
     suspend fun getUserById(id: UUID): User =
         userRepository.findById(id)
-            ?: throw UserNotFoundException(id.toString())
+            ?: throw NotFoundException("User not found: $id")
 
     private fun User.toAuthResponse(): AuthResponse {
         val token = jwtConfig.makeToken(id, email, role.name)

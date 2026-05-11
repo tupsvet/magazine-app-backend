@@ -3,6 +3,7 @@ package com.magazines
 import com.magazines.config.appModule
 import com.magazines.config.initDatabase
 import com.magazines.plugins.configureAuthentication
+import com.magazines.plugins.configureCORS
 import com.magazines.plugins.configureRouting
 import com.magazines.plugins.configureSerialization
 import com.magazines.plugins.configureStatusPages
@@ -33,6 +34,7 @@ fun Application.module() {
     }
 
     configureSerialization()
+    configureCORS()
     configureAuthentication()
     configureStatusPages()
     configureRouting()

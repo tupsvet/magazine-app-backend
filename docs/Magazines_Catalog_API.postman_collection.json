@@ -1,0 +1,331 @@
+{
+  "info": {
+    "_postman_id": "51d8dcbf-b09f-481f-be0e-66732097fb44",
+    "name": "Magazines Catalog API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44478555"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              " const response = pm.response.json();\r",
+              "   if (response.token) {\r",
+              "       pm.collectionVariables.set(\"token\", response.token);\r",
+              "       console.log(\"Token saved:\", response.token.substring(0, 30) + \"...\");\r",
+              "   }\r",
+              "\r",
+              "   pm.test(\"Status code is 200\", function () {\r",
+              "       pm.response.to.have.status(200);\r",
+              "   });\r",
+              "\r",
+              "   pm.test(\"Response has token and user\", function () {\r",
+              "       pm.expect(response).to.have.property(\"token\");\r",
+              "       pm.expect(response).to.have.property(\"user\");\r",
+              "       pm.expect(response.user).to.have.property(\"email\", \"test@test.com\");\r",
+              "       pm.expect(response.user.role).to.eql(\"USER\");\r",
+              "   });"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": " {\r\n       \"email\": \"test@test.com\",\r\n       \"password\": \"strongpass123\",\r\n       \"displayName\": \"Test User\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();\r",
+              "   if (response.token) {\r",
+              "       pm.collectionVariables.set(\"token\", response.token);\r",
+              "   }\r",
+              "\r",
+              "   pm.test(\"Status code is 200\", function () {\r",
+              "       pm.response.to.have.status(200);\r",
+              "   });\r",
+              "\r",
+              "   pm.test(\"Response has token\", function () {\r",
+              "       pm.expect(response).to.have.property(\"token\");\r",
+              "   });"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": " {\r\n       \"email\": \"test@test.com\",\r\n       \"password\": \"strongpass123\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get my profile",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "       pm.response.to.have.status(200);\r",
+              "   });\r",
+              "\r",
+              "   pm.test(\"Response is UserDto\", function () {\r",
+              "       const user = pm.response.json();\r",
+              "       pm.expect(user).to.have.property(\"id\");\r",
+              "       pm.expect(user).to.have.property(\"email\", \"test@test.com\");\r",
+              "       pm.expect(user).to.have.property(\"role\", \"USER\");\r",
+              "   });"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Register - duplicate email (negative)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 409 Conflict\", function () {\r",
+              "       pm.response.to.have.status(409);\r",
+              "   });\r",
+              "\r",
+              "   pm.test(\"Response has error message\", function () {\r",
+              "       const response = pm.response.json();\r",
+              "       pm.expect(response).to.have.property(\"error\");\r",
+              "   });"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n       \"email\": \"test@test.com\",\r\n       \"password\": \"anotherpass456\",\r\n       \"displayName\": \"Another User\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login - wrong password (negative)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401 Unauthorized\", function () {\r",
+              "       pm.response.to.have.status(401);\r",
+              "   });"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n       \"email\": \"test@test.com\",\r\n       \"password\": \"WRONG_PASSWORD\"\r\n   }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get my profile - no token (negative)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "  pm.test(\"Status code is 401 Unauthorized\", function () {\r",
+              "       pm.response.to.have.status(401);\r",
+              "   });"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import com.magazines.data.repository.MagazineRepositoryImpl
 import com.magazines.data.repository.UserRepository
 import com.magazines.service.AuthService
 import com.magazines.service.CategoryService
+import com.magazines.service.FileStorageService
 import com.magazines.service.MagazineService
 import com.magazines.service.PasswordHasher
 import com.typesafe.config.ConfigFactory
@@ -22,11 +23,20 @@ val appModule = module {
             .getOrDefault("http://localhost:8080")
     }
 
+    single(named("storagePath")) {
+        runCatching { ConfigFactory.load().getString("storage.path") }
+            .getOrDefault("./storage")
+    }
+
+    single {
+        FileStorageService(get(named("storagePath")))
+    }
+
     single { UserRepository() }
     single<CategoryRepository> { CategoryRepositoryImpl() }
     single<MagazineRepository> { MagazineRepositoryImpl() }
 
     single { AuthService(get(), get(), get()) }
     single { CategoryService(get()) }
-    single { MagazineService(get(), get(), get(named("baseUrl"))) }
+    single { MagazineService(get(), get(), get(), get(named("baseUrl"))) }
 }

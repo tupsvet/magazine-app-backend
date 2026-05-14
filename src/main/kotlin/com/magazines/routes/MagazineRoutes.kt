@@ -6,12 +6,17 @@ import com.magazines.domain.exception.BadRequestException
 import com.magazines.service.AuthService
 import com.magazines.service.MagazineService
 import com.magazines.util.currentUser
+import com.magazines.util.userIdOrThrow
+import com.magazines.util.userRoleOrThrow
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.PartData
+import io.ktor.http.content.forEachPart
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
+import io.ktor.server.request.receiveMultipart
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
@@ -74,6 +79,28 @@ fun Route.magazineRoutes(
                 val id = call.parseId()
                 magazineService.deleteMagazine(id, user)
                 call.respond(HttpStatusCode.NoContent)
+            }
+
+            post("/{id}/cover") {
+                val id = call.parseId()
+                val userId = call.userIdOrThrow()
+                val userRole = call.userRoleOrThrow()
+                var coverPart: PartData.FileItem? = null
+                call.receiveMultipart().forEachPart { part ->
+                    when (part) {
+                        is PartData.FileItem -> {
+                            if (part.name == "cover" && coverPart == null) {
+                                coverPart = part
+                            } else {
+                                part.dispose()
+                            }
+                        }
+                        else -> part.dispose()
+                    }
+                }
+                val fileItem = coverPart ?: throw BadRequestException("Missing 'cover' file part")
+                val dto = magazineService.uploadCover(id, userId, userRole, fileItem)
+                call.respond(dto)
             }
         }
     }

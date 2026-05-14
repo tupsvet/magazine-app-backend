@@ -14,11 +14,13 @@ import com.magazines.domain.model.Magazine
 import com.magazines.domain.model.MagazineStatus
 import com.magazines.domain.model.User
 import com.magazines.domain.model.UserRole
+import io.ktor.http.content.PartData
 import java.util.UUID
 
 class MagazineService(
     private val magazineRepository: MagazineRepository,
     private val categoryRepository: CategoryRepository,
+    private val fileStorageService: FileStorageService,
     private val baseUrl: String,
 ) {
 
@@ -118,6 +120,30 @@ class MagazineService(
             ?: throw NotFoundException("Magazine not found: $id")
         requireOwnerOrAdmin(existing, user)
         magazineRepository.delete(id)
+    }
+
+    fun uploadCover(magazineId: UUID, userId: UUID, userRole: UserRole, fileItem: PartData.FileItem): MagazineDto {
+        val magazine = magazineRepository.findById(magazineId)
+            ?: throw NotFoundException("Magazine not found: $magazineId")
+
+        val isAdmin = userRole == UserRole.ADMIN
+        val isOwner = magazine.uploadedBy == userId
+        if (!isAdmin && !isOwner) {
+            throw ForbiddenException("Only owner or admin can upload cover")
+        }
+
+        magazine.coverPath?.let { oldPath ->
+            fileStorageService.deleteFile(oldPath, "covers")
+        }
+
+        val newPath = fileStorageService.saveCover(magazineId, fileItem)
+        if (!magazineRepository.updateCoverPath(magazineId, newPath)) {
+            throw NotFoundException("Magazine not found: $magazineId")
+        }
+
+        val updated = magazineRepository.findById(magazineId)
+            ?: throw NotFoundException("Magazine not found: $magazineId")
+        return enrichOne(updated)
     }
 
     fun calculateAverageRating(magazineId: UUID): Double =

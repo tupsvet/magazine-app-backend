@@ -18,6 +18,8 @@ fun ApplicationCall.userIdOrThrow(): UUID {
     return UUID.fromString(sub)
 }
 
+fun ApplicationCall.extractUserId(): UUID = userIdOrThrow()
+
 fun ApplicationCall.userRoleOrThrow(): UserRole {
     val role = principalOrThrow().payload.getClaim("role").asString()
         ?: error("JWT role claim missing.")

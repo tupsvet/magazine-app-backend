@@ -149,6 +149,11 @@ class MagazineService(
     fun calculateAverageRating(magazineId: UUID): Double =
         magazineRepository.getStats(magazineId).averageRating
 
+    fun isOwner(magazineId: UUID, userId: UUID): Boolean {
+        val magazine = magazineRepository.findById(magazineId) ?: return false
+        return magazine.uploadedBy == userId
+    }
+
     private fun requireOwnerOrAdmin(magazine: Magazine, user: User) {
         if (user.role == UserRole.ADMIN) return
         if (magazine.uploadedBy == user.id) return

@@ -2,12 +2,15 @@ package com.magazines.config
 
 import com.magazines.data.repository.CategoryRepository
 import com.magazines.data.repository.CategoryRepositoryImpl
+import com.magazines.data.repository.IssueRepository
+import com.magazines.data.repository.IssueRepositoryImpl
 import com.magazines.data.repository.MagazineRepository
 import com.magazines.data.repository.MagazineRepositoryImpl
 import com.magazines.data.repository.UserRepository
 import com.magazines.service.AuthService
 import com.magazines.service.CategoryService
 import com.magazines.service.FileStorageService
+import com.magazines.service.IssueService
 import com.magazines.service.MagazineService
 import com.magazines.service.PasswordHasher
 import com.typesafe.config.ConfigFactory
@@ -35,8 +38,10 @@ val appModule = module {
     single { UserRepository() }
     single<CategoryRepository> { CategoryRepositoryImpl() }
     single<MagazineRepository> { MagazineRepositoryImpl() }
+    single<IssueRepository> { IssueRepositoryImpl() }
 
     single { AuthService(get(), get(), get()) }
     single { CategoryService(get()) }
     single { MagazineService(get(), get(), get(), get(named("baseUrl"))) }
+    single { IssueService(get(), get(), get(), get(), get(named("baseUrl"))) }
 }

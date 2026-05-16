@@ -13,6 +13,7 @@ data class Magazine(
     val coverPath: String?,
     val uploadedBy: UUID?,
     val status: MagazineStatus,
+    val rejectionReason: String? = null,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
 )

@@ -1,5 +1,6 @@
 package com.magazines.plugins
 
+import com.magazines.routes.adminRoutes
 import com.magazines.routes.authRoutes
 import com.magazines.routes.categoryRoutes
 import com.magazines.routes.issueRoutes
@@ -11,6 +12,7 @@ import com.magazines.service.CategoryService
 import com.magazines.service.IssueService
 import com.magazines.service.MagazineService
 import com.magazines.service.FavoriteService
+import com.magazines.service.ModerationService
 import com.magazines.service.ReviewService
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
@@ -30,6 +32,7 @@ fun Application.configureRouting() {
     val issueService by inject<IssueService>()
     val reviewService by inject<ReviewService>()
     val favoriteService by inject<FavoriteService>()
+    val moderationService by inject<ModerationService>()
     val storagePath by inject<String>(named("storagePath"))
 
     routing {
@@ -49,5 +52,6 @@ fun Application.configureRouting() {
         issueRoutes(issueService, authService)
         reviewRoutes(reviewService)
         favoriteRoutes(favoriteService)
+        adminRoutes(moderationService, magazineService)
     }
 }

@@ -17,6 +17,7 @@ import com.magazines.service.FavoriteService
 import com.magazines.service.FileStorageService
 import com.magazines.service.IssueService
 import com.magazines.service.MagazineService
+import com.magazines.service.ModerationService
 import com.magazines.service.PasswordHasher
 import com.magazines.service.ReviewService
 import com.typesafe.config.ConfigFactory
@@ -54,4 +55,5 @@ val appModule = module {
     single { IssueService(get(), get(), get(), get(), get(named("baseUrl"))) }
     single { ReviewService(get(), get()) }
     single { FavoriteService(get(), get(), get(), get(named("baseUrl"))) }
+    single { ModerationService(get()) }
 }

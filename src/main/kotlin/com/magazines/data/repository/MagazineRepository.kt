@@ -60,6 +60,11 @@ interface MagazineRepository {
         description: String?,
     ): Magazine?
     fun updateStatus(id: UUID, status: MagazineStatus): Magazine?
+
+    fun approve(id: UUID): Magazine?
+
+    fun reject(id: UUID, reason: String?): Magazine?
+
     fun updateCoverPath(id: UUID, path: String?): Boolean
     fun delete(id: UUID): Boolean
 
@@ -116,7 +121,7 @@ class MagazineRepositoryImpl : MagazineRepository {
     override fun findPending(): List<Magazine> = transaction {
         MagazinesTable
             .select { MagazinesTable.status eq MagazineStatus.PENDING }
-            .orderBy(MagazinesTable.createdAt to SortOrder.ASC)
+            .orderBy(MagazinesTable.createdAt to SortOrder.DESC)
             .map { it.toMagazine() }
     }
 
@@ -171,6 +176,33 @@ class MagazineRepositoryImpl : MagazineRepository {
     override fun updateStatus(id: UUID, status: MagazineStatus): Magazine? = transaction {
         val updated = MagazinesTable.update({ MagazinesTable.id eq id }) { stmt ->
             stmt[MagazinesTable.status] = status
+            stmt[MagazinesTable.updatedAt] = CurrentDateTime
+        }
+        if (updated == 0) null
+        else MagazinesTable
+            .select { MagazinesTable.id eq id }
+            .single()
+            .toMagazine()
+    }
+
+    override fun approve(id: UUID): Magazine? = transaction {
+        val updated = MagazinesTable.update({ MagazinesTable.id eq id }) { stmt ->
+            stmt[MagazinesTable.status] = MagazineStatus.APPROVED
+            stmt[MagazinesTable.rejectionReason] = null
+            stmt[MagazinesTable.updatedAt] = CurrentDateTime
+        }
+        if (updated == 0) null
+        else MagazinesTable
+            .select { MagazinesTable.id eq id }
+            .single()
+            .toMagazine()
+    }
+
+    override fun reject(id: UUID, reason: String?): Magazine? = transaction {
+        val normalizedReason = reason?.trim()?.takeIf { it.isNotEmpty() }
+        val updated = MagazinesTable.update({ MagazinesTable.id eq id }) { stmt ->
+            stmt[MagazinesTable.status] = MagazineStatus.REJECTED
+            stmt[MagazinesTable.rejectionReason] = normalizedReason
             stmt[MagazinesTable.updatedAt] = CurrentDateTime
         }
         if (updated == 0) null
@@ -261,6 +293,7 @@ class MagazineRepositoryImpl : MagazineRepository {
         coverPath = this[MagazinesTable.coverPath],
         uploadedBy = this[MagazinesTable.uploadedBy]?.value,
         status = this[MagazinesTable.status],
+        rejectionReason = this[MagazinesTable.rejectionReason],
         createdAt = this[MagazinesTable.createdAt],
         updatedAt = this[MagazinesTable.updatedAt],
     )

@@ -14,6 +14,7 @@ object MagazinesTable : UUIDTable("magazines") {
     val coverPath = varchar("cover_path", 500).nullable()
     val uploadedBy = reference("uploaded_by", UsersTable).nullable()
     val status = enumerationByName("status", 20, MagazineStatus::class)
+    val rejectionReason = text("rejection_reason").nullable()
     val createdAt = datetime("created_at").defaultExpression(CurrentDateTime)
     val updatedAt = datetime("updated_at").defaultExpression(CurrentDateTime)
 }

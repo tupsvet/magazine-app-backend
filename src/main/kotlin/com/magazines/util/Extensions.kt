@@ -1,5 +1,6 @@
 package com.magazines.util
 
+import com.magazines.domain.exception.ForbiddenException
 import com.magazines.domain.model.User
 import com.magazines.domain.model.UserRole
 import com.magazines.service.AuthService
@@ -24,6 +25,12 @@ fun ApplicationCall.userRoleOrThrow(): UserRole {
     val role = principalOrThrow().payload.getClaim("role").asString()
         ?: error("JWT role claim missing.")
     return UserRole.valueOf(role)
+}
+
+fun ApplicationCall.requireAdmin() {
+    if (userRoleOrThrow() != UserRole.ADMIN) {
+        throw ForbiddenException("Admin role required")
+    }
 }
 
 suspend fun ApplicationCall.currentUser(authService: AuthService): User =

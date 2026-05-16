@@ -14,6 +14,7 @@ data class MagazineDto(
     val coverUrl: String?,
     val uploadedBy: String?,
     val status: String,
+    val rejectionReason: String? = null,
     val averageRating: Double,
     val reviewsCount: Int,
     val issuesCount: Int,

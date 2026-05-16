@@ -154,6 +154,10 @@ class MagazineService(
         return magazine.uploadedBy == userId
     }
 
+    fun toMagazineDto(magazine: Magazine): MagazineDto = enrichOne(magazine)
+
+    fun toMagazineDtos(magazines: List<Magazine>): List<MagazineDto> = enrichMany(magazines)
+
     private fun requireOwnerOrAdmin(magazine: Magazine, user: User) {
         if (user.role == UserRole.ADMIN) return
         if (magazine.uploadedBy == user.id) return
@@ -193,6 +197,7 @@ private fun Magazine.toDto(categoryName: String?, stats: MagazineStats, baseUrl:
         coverUrl = coverPath?.let { "$baseUrl/files/covers/$it" },
         uploadedBy = uploadedBy?.toString(),
         status = status.name,
+        rejectionReason = rejectionReason,
         averageRating = stats.averageRating,
         reviewsCount = stats.reviewsCount,
         issuesCount = stats.issuesCount,

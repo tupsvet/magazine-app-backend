@@ -2,63 +2,51 @@
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 # Kotlin
 .kotlin/
+*.class
 
-# IDE - IntelliJ IDEA
+# IDE — IntelliJ IDEA / Android Studio
 .idea/
 *.iml
 *.iws
 *.ipr
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
 
-# IDE - VS Code
+# IDE — VS Code / Cursor
 .vscode/
+.cursor/
 *.code-workspace
 
-# IDE - Eclipse
+# IDE — Eclipse
 .classpath
 .project
 .settings/
 bin/
 
-# IDE - NetBeans
+# IDE — NetBeans
 nbproject/private/
 nbbuild/
 nbdist/
 .nb-gradle/
 
-# OS - Windows
+# OS
+.DS_Store
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
-*.lnk
-
-# OS - macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-._*
-
-# OS - Linux
 *~
-.fuse_hidden*
-.Trash-*
 
 # Logs
 *.log
 logs/
-log/
 
-# Environment & secrets
+# Environment & secrets (keep .env.example in repo)
 .env
-*.env
+.env.local
+.env.*.local
 secrets/
 *.key
 *.pem
@@ -77,43 +65,36 @@ local.properties
 # Ktor
 .ktor/
 
-# JVM crash logs
+# JVM crash dumps
 hs_err_pid*
 replay_pid*
 
-# Temporary files
+# Temp files
 *.tmp
 *.temp
 *.bak
 *.swp
-*.swo
 
-# Coverage reports
+# Coverage
 coverage/
 *.lcov
-.nyc_output/
 
-# Test reports
-test-results/
-test-output/
-
-# Database
+# Local database files
 *.db
 *.sqlite
 *.sqlite3
 
-# Docker
-.docker/
+# Docker overrides (local-only)
 docker-compose.override.yml
 
-# Локальное файловое хранилище
+# Uploaded files (keep directory structure)
 storage/covers/*
 storage/pdfs/*
 !storage/covers/.gitkeep
 !storage/pdfs/.gitkeep
 
-# Node (если будет фронт-часть рядом)
+# Node (if frontend lives nearby)
 node_modules/
 
-# Claude Code
+# AI assistant local state
 .claude/

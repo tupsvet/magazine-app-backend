@@ -13,12 +13,14 @@ val dataSource: DataSource
     get() = hikariDataSource ?: error("Database is not initialized. Call initDatabase() first.")
 
 fun initDatabase() {
+    if (hikariDataSource != null) return
+
     val dbConfig = ConfigFactory.load().getConfig("database")
 
     val ds = HikariDataSource(HikariConfig().apply {
-        jdbcUrl = dbConfig.getString("url")
-        username = dbConfig.getString("user")
-        password = dbConfig.getString("password")
+        jdbcUrl = System.getProperty("DATABASE_URL") ?: dbConfig.getString("url")
+        username = System.getProperty("DATABASE_USER") ?: dbConfig.getString("user")
+        password = System.getProperty("DATABASE_PASSWORD") ?: dbConfig.getString("password")
         driverClassName = "org.postgresql.Driver"
         maximumPoolSize = 10
         minimumIdle = 2

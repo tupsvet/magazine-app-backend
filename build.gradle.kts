@@ -31,6 +31,7 @@ val exposedVersion = "0.45.0"
 val koinVersion = "3.5.6"
 val flywayVersion = "10.10.0"
 val logbackVersion = "1.4.14"
+val testcontainersVersion = "1.20.4"
 
 dependencies {
     // Ktor server
@@ -75,6 +76,15 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
     // Tests
-    testImplementation(kotlin("test"))
-    testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    testImplementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
+    testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.2")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

@@ -10,6 +10,7 @@ import com.magazines.plugins.configureStatusPages
 import com.typesafe.config.ConfigFactory
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.util.AttributeKey
 import io.ktor.server.config.HoconApplicationConfig
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -24,7 +25,11 @@ fun main() {
         .start(wait = true)
 }
 
+private val moduleConfiguredKey = AttributeKey<Boolean>("moduleConfigured")
+
 fun Application.module() {
+    if (attributes.getOrNull(moduleConfiguredKey) == true) return
+    attributes.put(moduleConfiguredKey, true)
 
     initDatabase()
 

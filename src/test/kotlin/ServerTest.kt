@@ -4,7 +4,8 @@ import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
 import org.flywaydb.core.Flyway.configure
-import kotlin.test.*
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 class ServerTest {
 
